@@ -103,7 +103,7 @@ public class Music.TopDisplay : Gtk.Stack {
 
         seek_bar.scale.change_value.connect (change_value);
 
-        vol_slider.adjustment.set_value (100);
+        vol_slider.adjustment.set_value (App.player.player.get_volume() * 100);
         vol_slider.set_draw_value (false);
 
         vol_slider.change_value.connect (change_volume);
