@@ -33,11 +33,13 @@ public class Music.TopDisplay : Gtk.Stack {
 
     private Gtk.ProgressBar progress_bar;
     private Granite.SeekBar seek_bar;
+    private Gtk.Scale vol_slider;
     private uint change_timeout_id = 0;
     private uint progress_timeout_id = 0;
 
     construct {
         seek_bar = new Granite.SeekBar (0.0);
+        vol_slider = new Gtk.Scale.with_range (Gtk.Orientation.HORIZONTAL, 0, 100, 1);
 
         var shuffle_chooser = new ShuffleChooser ();
         var repeat_chooser = new RepeatChooser ();
@@ -52,6 +54,7 @@ public class Music.TopDisplay : Gtk.Stack {
         time_grid.attach (track_eventbox, 1, 0, 1, 1);
         time_grid.attach (repeat_chooser, 2, 0, 1, 1);
         time_grid.attach (seek_bar, 0, 1, 3, 1);
+        time_grid.attach (vol_slider, 3, 0, 7, 3);
 
         var action_label = new TitleLabel ("");
 
@@ -99,6 +102,11 @@ public class Music.TopDisplay : Gtk.Stack {
         });
 
         seek_bar.scale.change_value.connect (change_value);
+
+        vol_slider.adjustment.set_value (100);
+        vol_slider.set_draw_value (false);
+
+        vol_slider.change_value.connect (change_volume);
 
         App.player.player.current_position_update.connect (player_position_update);
 
@@ -185,6 +193,11 @@ public class Music.TopDisplay : Gtk.Stack {
     public void set_progress_value (double progress) {
         progress_bar.fraction = progress;
         update_view ();
+    }
+
+    public virtual bool change_volume (Gtk.ScrollType scroll, double val){
+        App.player.player.set_volume(val / 100);
+        return false;
     }
 
     public virtual bool change_value (Gtk.ScrollType scroll, double val) {
